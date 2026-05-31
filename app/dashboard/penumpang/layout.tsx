@@ -180,36 +180,6 @@ export default function PenumpangLayout({
           {children}
         </main>
       </div>
-
-      {/* Bottom Navigation Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-800 bg-slate-900 lg:hidden">
-        <div className="grid grid-cols-4">
-          {menus.map((menu) => {
-            const Icon = menu.icon
-
-            const active =
-              pathname === menu.href
-
-            return (
-              <Link
-                key={menu.href}
-                href={menu.href}
-                className={`flex flex-col items-center gap-1 py-3 ${
-                  active
-                    ? 'text-cyan-400'
-                    : 'text-slate-500'
-                }`}
-              >
-                <Icon size={20} />
-
-                <span className="text-[11px]">
-                  {menu.title}
-                </span>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
     </div>
   )
 }
