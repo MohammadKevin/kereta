@@ -68,7 +68,7 @@ export default function ScanPage() {
             facingMode:
               'environment',
           }}
-          onResult={(result) => {
+          onResult={(result: { getText: () => string }) => {
             if (result) {
               handleScan(
                 result.getText(),

@@ -28,31 +28,48 @@ export default function AdminDashboardPage() {
   }, [])
 
   const fetchDashboard = async () => {
-    try {
-      setLoading(true)
+  try {
+    setLoading(true)
 
-      const [
-        keretaRes,
-        jadwalRes,
-      ] = await Promise.all([
-        api.get('/kereta'),
-        api.get('/jadwal'),
-      ])
+    const [
+      keretaRes,
+      jadwalRes,
+      ticketRes,
+      pemasukanRes,
+    ] = await Promise.all([
+      api.get('/kereta'),
+      api.get('/jadwal'),
+      api.get('/ticket'),
+      api.get('/ticket/rekap/pemasukan'),
+    ])
 
-      setStats({
-        kereta:
-          keretaRes.data?.length || 0,
-        jadwal:
-          jadwalRes.data?.length || 0,
-        pelanggan: 0,
-        pemasukan: 0,
-      })
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
+    const pelangganUnik = new Set(
+      ticketRes.data.map(
+        (item: any) =>
+          item.pelangganId,
+      ),
+    )
+
+    setStats({
+      kereta:
+        keretaRes.data?.length || 0,
+
+      jadwal:
+        jadwalRes.data?.length || 0,
+
+      pelanggan:
+        pelangganUnik.size,
+
+      pemasukan:
+        pemasukanRes.data
+          ?.total_pemasukan || 0,
+    })
+  } catch (error) {
+    console.error(error)
+  } finally {
+    setLoading(false)
   }
+}
 
   const cards = [
     {
