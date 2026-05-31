@@ -50,6 +50,12 @@ export default function AdminGerbongPage() {
   const [keretaId, setKeretaId] =
     useState<number | ''>('')
 
+  const [expandedKereta, setExpandedKereta] =
+    useState<number | null>(null)
+
+  const [expandedGerbong, setExpandedGerbong] =
+    useState<number | null>(null)
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -105,6 +111,10 @@ export default function AdminGerbongPage() {
         keretaId: Number(keretaId),
       })
 
+      alert(
+        'Gerbong dan kursi berhasil dibuat',
+      )
+
       setNamaGerbong('')
       setKuota('')
       setKeretaId('')
@@ -140,29 +150,36 @@ export default function AdminGerbongPage() {
     }
   }
 
-  const generateSeat = async (
-    id: number,
-  ) => {
-    try {
-      await api.post(
-        `/gerbong/${id}/generate-seat`,
-      )
+  const groupedKereta: any[] = Object.values(
+    gerbongs.reduce(
+      (acc: any, gerbong) => {
+        const kereta =
+          keretaList.find(
+            (k) =>
+              k.id ===
+              gerbong.keretaId,
+          )
 
-      alert(
-        'Kursi berhasil dibuat',
-      )
+        if (!kereta) return acc
 
-      fetchData()
-    } catch (error: any) {
-      console.error(error)
+        if (!acc[kereta.id]) {
+          acc[kereta.id] = {
+            ...kereta,
+            gerbongs: [],
+          }
+        }
 
-      alert(
-        error?.response?.data
-          ?.message ||
-        'Gagal generate kursi',
-      )
-    }
-  }
+        acc[
+          kereta.id
+        ].gerbongs.push(
+          gerbong,
+        )
+
+        return acc
+      },
+      {},
+    ),
+  )
 
   if (loading) {
     return (
@@ -261,129 +278,199 @@ export default function AdminGerbongPage() {
         </div>
       </div>
 
-      <div className="grid gap-6">
-        {gerbongs.map(
-          (gerbong) => (
+      {groupedKereta.map(
+        (kereta: any) => {
+          const totalKursi =
+            kereta.gerbongs.reduce(
+              (
+                total: number,
+                g: any,
+              ) =>
+                total +
+                (g.kursi?.length ||
+                  g.kuota),
+              0,
+            )
+
+          return (
             <div
-              key={gerbong.id}
-              className="rounded-3xl border border-slate-800 bg-slate-900 p-6"
+              key={kereta.id}
+              className="rounded-3xl border border-slate-800 bg-slate-900"
             >
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <h3 className="flex items-center gap-2 text-xl font-bold text-white">
-                    <Train size={20} />
-
-                    {
-                      gerbong.nama_gerbong
-                    }
-                  </h3>
-
-                  <p className="mt-1 text-slate-400">
-                    Kuota:{' '}
-                    {gerbong.kuota}
-                  </p>
-
-                  <p className="text-cyan-400">
-                    Total Kursi:{' '}
-                    {gerbong.kursi
-                      ?.length ||
-                      0}
-                  </p>
-                </div>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={() =>
-                      generateSeat(
-                        gerbong.id,
-                      )
-                    }
-                    className="rounded-xl bg-green-500 px-4 py-2 font-semibold text-white hover:bg-green-600"
-                  >
-                    Generate Kursi
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      deleteGerbong(
-                        gerbong.id,
-                      )
-                    }
-                    className="rounded-xl bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-                  >
-                    <Trash2
-                      size={18}
-                    />
-                  </button>
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                {Array.from({
-                  length: Math.ceil(
-                    (gerbong.kursi?.length || 0) / 4,
-                  ),
-                }).map((_, rowIndex) => {
-                  const row =
-                    gerbong.kursi?.slice(
-                      rowIndex * 4,
-                      rowIndex * 4 + 4,
-                    ) || []
-
-                  return (
-                    <div
-                      key={rowIndex}
-                      className="flex items-center justify-center gap-3"
-                    >
-                      <div className="flex gap-3">
-                        {row
-                          .slice(0, 2)
-                          .map((kursi) => (
-                            <div
-                              key={kursi.id}
-                              className="flex h-16 w-16 flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950"
-                            >
-                              <Armchair
-                                size={18}
-                                className="text-cyan-400"
-                              />
-
-                              <span className="mt-1 text-xs font-semibold text-white">
-                                {kursi.no_kursi}
-                              </span>
-                            </div>
-                          ))}
-                      </div>
-
-                      <div className="w-10" />
-
-                      <div className="flex gap-3">
-                        {row
-                          .slice(2, 4)
-                          .map((kursi) => (
-                            <div
-                              key={kursi.id}
-                              className="flex h-16 w-16 flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950"
-                            >
-                              <Armchair
-                                size={18}
-                                className="text-cyan-400"
-                              />
-
-                              <span className="mt-1 text-xs font-semibold text-white">
-                                {kursi.no_kursi}
-                              </span>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
+              <button
+                onClick={() =>
+                  setExpandedKereta(
+                    expandedKereta ===
+                      kereta.id
+                      ? null
+                      : kereta.id,
                   )
-                })}
-              </div>
+                }
+                className="w-full p-6 text-left"
+              >
+                <h2 className="text-2xl font-bold text-white">
+                  {kereta.nama_kereta}
+                </h2>
+
+                <p className="text-cyan-400">
+                  {kereta.kelas}
+                </p>
+
+                <p className="mt-3 text-slate-400">
+                  {
+                    kereta.gerbongs
+                      .length
+                  }{' '}
+                  Gerbong •{' '}
+                  {totalKursi} Kursi
+                </p>
+              </button>
+
+              {expandedKereta ===
+                kereta.id && (
+                  <div className="border-t border-slate-800">
+                    {kereta.gerbongs.map(
+                      (g: any) => (
+                        <div
+                          key={g.id}
+                          className="border-b border-slate-800 p-4 last:border-b-0"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="font-bold text-white">
+                                {g.nama_gerbong}
+                              </h3>
+
+                              <p className="text-slate-400">
+                                {g.kursi?.length || g.kuota}{' '}
+                                Kursi
+                              </p>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() =>
+                                  setExpandedGerbong(
+                                    expandedGerbong ===
+                                      g.id
+                                      ? null
+                                      : g.id,
+                                  )
+                                }
+                                className="rounded-xl bg-cyan-400 px-3 py-2 text-sm font-semibold text-slate-950"
+                              >
+                                {expandedGerbong ===
+                                  g.id
+                                  ? 'Tutup'
+                                  : 'Lihat Kursi'}
+                              </button>
+
+                              <button
+                                onClick={() =>
+                                  deleteGerbong(g.id)
+                                }
+                                className="rounded-xl bg-red-500 p-2 text-white hover:bg-red-600"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+
+                          {expandedGerbong ===
+                            g.id && (
+                              <div className="mt-5 space-y-3">
+                                {Array.from({
+                                  length: Math.ceil(
+                                    (g.kursi?.length ||
+                                      0) / 4,
+                                  ),
+                                }).map(
+                                  (_, rowIndex) => {
+                                    const row =
+                                      g.kursi?.slice(
+                                        rowIndex * 4,
+                                        rowIndex * 4 + 4,
+                                      ) || []
+
+                                    return (
+                                      <div
+                                        key={rowIndex}
+                                        className="flex justify-center gap-8"
+                                      >
+                                        <div className="flex gap-2">
+                                          {row
+                                            .slice(0, 2)
+                                            .map(
+                                              (
+                                                kursi: any,
+                                              ) => (
+                                                <div
+                                                  key={
+                                                    kursi.id
+                                                  }
+                                                  className="flex h-14 w-14 flex-col items-center justify-center rounded-xl border border-slate-700 bg-slate-900"
+                                                >
+                                                  <Armchair
+                                                    size={
+                                                      16
+                                                    }
+                                                    className="text-cyan-400"
+                                                  />
+
+                                                  <span className="text-xs text-white">
+                                                    {
+                                                      kursi.no_kursi
+                                                    }
+                                                  </span>
+                                                </div>
+                                              ),
+                                            )}
+                                        </div>
+
+                                        <div className="flex gap-2">
+                                          {row
+                                            .slice(2, 4)
+                                            .map(
+                                              (
+                                                kursi: any,
+                                              ) => (
+                                                <div
+                                                  key={
+                                                    kursi.id
+                                                  }
+                                                  className="flex h-14 w-14 flex-col items-center justify-center rounded-xl border border-slate-700 bg-slate-900"
+                                                >
+                                                  <Armchair
+                                                    size={
+                                                      16
+                                                    }
+                                                    className="text-cyan-400"
+                                                  />
+
+                                                  <span className="text-xs text-white">
+                                                    {
+                                                      kursi.no_kursi
+                                                    }
+                                                  </span>
+                                                </div>
+                                              ),
+                                            )}
+                                        </div>
+                                      </div>
+                                    )
+                                  },
+                                )}
+                              </div>
+                            )}
+                        </div>
+                      ),
+                    )}
+                  </div>
+                )}
             </div>
-          ),
-        )}
-      </div>
+          )
+        },
+      )}
     </div>
   )
 }
