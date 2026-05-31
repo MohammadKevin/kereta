@@ -232,9 +232,29 @@ export default function AdminJadwalPage() {
     });
   };
 
+  const groupedJadwal = useMemo(() => {
+    const map = new Map()
+
+    filteredJadwal.forEach((item) => {
+      const key =
+        `${item.asal_keberangkatan}-${item.tujuan_keberangkatan}-${item.keretaId}`
+
+      if (!map.has(key)) {
+        map.set(key, {
+          ...item,
+          total_jadwal: 0,
+        })
+      }
+
+      map.get(key).total_jadwal++
+    })
+
+    return Array.from(map.values())
+  }, [filteredJadwal])
+
   return (
     <div className="space-y-8 min-h-screen bg-slate-950 text-slate-100">
-      
+
       {/* ================= HEADER CONTROL REGION ================= */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
@@ -288,64 +308,112 @@ export default function AdminJadwalPage() {
           <p className="text-slate-400 font-medium">Tidak ada data jadwal keberangkatan terdaftar.</p>
         </div>
       ) : (
-        <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.3)]">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-800 bg-slate-950/50 text-xs font-bold uppercase tracking-wider text-slate-400">
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Armada Kereta</th>
-                  <th className="px-6 py-4">Asal</th>
-                  <th className="px-6 py-4">Tujuan</th>
-                  <th className="px-6 py-4">Tanggal Berangkat</th>
-                  <th className="px-6 py-4">Tanggal Kedatangan</th>
-                  <th className="px-6 py-4">Harga</th>
-                  <th className="px-6 py-4 text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 text-sm font-medium text-slate-300">
-                {filteredJadwal.map((jadwal) => {
-                  const targetKereta = keretaMap.get(jadwal.keretaId);
-                  return (
-                    <tr key={jadwal.id} className="hover:bg-slate-950/40 transition-colors duration-150">
-                      <td className="px-6 py-4 font-mono text-xs text-slate-500">{jadwal.id}</td>
-                      <td className="px-6 py-4 font-semibold text-white">
-                        <div className="flex flex-col">
-                          <span>{targetKereta ? targetKereta.nama_kereta : `ID: ${jadwal.keretaId}`}</span>
-                          <span className="text-[10px] font-bold text-cyan-400/80 tracking-wider uppercase mt-0.5">{targetKereta?.kelas || '-'}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">{jadwal.asal_keberangkatan}</td>
-                      <td className="px-6 py-4">{jadwal.tujuan_keberangkatan}</td>
-                      <td className="px-6 py-4 text-slate-400">{formatDisplayDate(jadwal.tanggal_berangkat)}</td>
-                      <td className="px-6 py-4 text-slate-400">{formatDisplayDate(jadwal.tanggal_kedatangan)}</td>
-                      <td className="px-6 py-4 font-mono text-xs font-bold text-emerald-400">
-                        {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(jadwal.harga)}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            onClick={() => openEditModal(jadwal)}
-                            className="p-2 text-slate-400 hover:text-cyan-400 bg-slate-950/60 hover:bg-slate-950 border border-slate-800 rounded-xl transition-all duration-200"
-                            title="Edit"
-                          >
-                            <Pencil className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => openDeleteModal(jadwal)}
-                            className="p-2 text-slate-400 hover:text-red-400 bg-slate-950/60 hover:bg-slate-950 border border-slate-800 rounded-xl transition-all duration-200"
-                            title="Hapus"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {groupedJadwal.map((jadwal: any) => {
+            const kereta =
+              keretaMap.get(
+                jadwal.keretaId,
+              )
+
+            return (
+              <div
+                key={jadwal.id}
+                className="rounded-3xl border border-slate-800 bg-slate-900 p-6"
+              >
+                <div className="mb-5 flex items-center gap-3">
+                  <Train className="text-cyan-400" />
+
+                  <div>
+                    <h3 className="font-bold text-white">
+                      {kereta?.nama_kereta}
+                    </h3>
+
+                    <p className="text-sm text-cyan-400">
+                      {kereta?.kelas}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Asal
+                    </p>
+
+                    <p className="font-semibold text-white">
+                      {
+                        jadwal.asal_keberangkatan
+                      }
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Tujuan
+                    </p>
+
+                    <p className="font-semibold text-white">
+                      {
+                        jadwal.tujuan_keberangkatan
+                      }
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Harga
+                    </p>
+
+                    <p className="font-bold text-green-400">
+                      Rp{' '}
+                      {Number(
+                        jadwal.harga,
+                      ).toLocaleString(
+                        'id-ID',
+                      )}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-slate-500">
+                      Total Jadwal
+                    </p>
+
+                    <p className="font-bold text-cyan-400">
+                      {
+                        jadwal.total_jadwal
+                      }{' '}
+                      Hari
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-2">
+                  <button
+                    onClick={() =>
+                      openEditModal(
+                        jadwal,
+                      )
+                    }
+                    className="flex-1 rounded-xl bg-cyan-400 py-2 font-semibold text-slate-950"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      openDeleteModal(
+                        jadwal,
+                      )
+                    }
+                    className="rounded-xl bg-red-500 px-4 py-2 text-white"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              </div>
+            )
+          })}
         </div>
       )}
 
@@ -353,9 +421,9 @@ export default function AdminJadwalPage() {
       {modalType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={closeModal} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          
+
           <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            
+
             {/* Header Control Container */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/50">
               <h3 className="text-base font-bold text-white">

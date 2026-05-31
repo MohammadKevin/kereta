@@ -159,7 +159,7 @@ export default function AdminGerbongPage() {
       alert(
         error?.response?.data
           ?.message ||
-          'Gagal generate kursi',
+        'Gagal generate kursi',
       )
     }
   }
@@ -318,26 +318,70 @@ export default function AdminGerbongPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-4 gap-3 md:grid-cols-8 lg:grid-cols-10">
-                {gerbong.kursi?.map(
-                  (kursi) => (
-                    <div
-                      key={kursi.id}
-                      className="flex flex-col items-center rounded-xl border border-slate-800 bg-slate-950 p-3"
-                    >
-                      <Armchair
-                        size={18}
-                        className="text-cyan-400"
-                      />
-
-                      <span className="mt-2 text-xs font-semibold text-white">
-                        {
-                          kursi.no_kursi
-                        }
-                      </span>
-                    </div>
+              <div className="mt-6 space-y-3">
+                {Array.from({
+                  length: Math.ceil(
+                    (gerbong.kursi?.length || 0) / 4,
                   ),
-                )}
+                }).map((_, rowIndex) => {
+                  const row =
+                    gerbong.kursi?.slice(
+                      rowIndex * 4,
+                      rowIndex * 4 + 4,
+                    ) || []
+
+                  return (
+                    <div
+                      key={rowIndex}
+                      className="flex items-center justify-center gap-3"
+                    >
+                      {/* kiri */}
+                      <div className="flex gap-3">
+                        {row
+                          .slice(0, 2)
+                          .map((kursi) => (
+                            <div
+                              key={kursi.id}
+                              className="flex h-16 w-16 flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950"
+                            >
+                              <Armchair
+                                size={18}
+                                className="text-cyan-400"
+                              />
+
+                              <span className="mt-1 text-xs font-semibold text-white">
+                                {kursi.no_kursi}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+
+                      {/* lorong */}
+                      <div className="w-10" />
+
+                      {/* kanan */}
+                      <div className="flex gap-3">
+                        {row
+                          .slice(2, 4)
+                          .map((kursi) => (
+                            <div
+                              key={kursi.id}
+                              className="flex h-16 w-16 flex-col items-center justify-center rounded-xl border border-slate-800 bg-slate-950"
+                            >
+                              <Armchair
+                                size={18}
+                                className="text-cyan-400"
+                              />
+
+                              <span className="mt-1 text-xs font-semibold text-white">
+                                {kursi.no_kursi}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           ),

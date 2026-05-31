@@ -99,6 +99,48 @@ export default function CariTiketPage() {
       tujuan,
       tanggal,
     ])
+  const groupedJadwal =
+    useMemo(() => {
+      const map = new Map()
+
+      filteredJadwal.forEach(
+        (item) => {
+          const tanggal =
+            new Date(
+              item.tanggal_berangkat,
+            )
+
+          const jamBerangkat =
+            `${String(
+              tanggal.getHours(),
+            ).padStart(
+              2,
+              '0',
+            )}:${String(
+              tanggal.getMinutes(),
+            ).padStart(
+              2,
+              '0',
+            )}`
+
+          const key =
+            `${item.asal_keberangkatan}-${item.tujuan_keberangkatan}-${item.kereta.id}-${jamBerangkat}`
+
+          if (!map.has(key)) {
+            map.set(key, {
+              ...item,
+              total_jadwal: 0,
+            })
+          }
+
+          map.get(key).total_jadwal++
+        },
+      )
+
+      return Array.from(
+        map.values(),
+      )
+    }, [filteredJadwal])
 
   return (
     <div className="space-y-8">
@@ -161,11 +203,11 @@ export default function CariTiketPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredJadwal.map(
-            (item) => (
+          {groupedJadwal.map(
+            (item: any) => (
               <div
                 key={item.id}
-                className="rounded-2xl border border-slate-800 bg-slate-900 p-6"
+                className="rounded-3xl border border-slate-800 bg-slate-900 p-6 transition hover:border-cyan-500"
               >
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                   <div>
@@ -174,43 +216,52 @@ export default function CariTiketPage() {
 
                       <h3 className="text-lg font-bold text-white">
                         {
-                          item
-                            .kereta
+                          item.kereta
                             .nama_kereta
                         }
                       </h3>
 
                       <span className="rounded-lg bg-cyan-500/10 px-2 py-1 text-xs text-cyan-400">
                         {
-                          item
-                            .kereta
+                          item.kereta
                             .kelas
                         }
                       </span>
                     </div>
 
-                    <div className="mt-4 flex items-center gap-2 text-slate-300">
-                      <MapPin size={16} />
-
+                    <div className="mt-4 text-white">
                       {
                         item.asal_keberangkatan
                       }
-
-                      →
-
+                      {' → '}
                       {
                         item.tujuan_keberangkatan
                       }
                     </div>
 
-                    <div className="mt-2 flex items-center gap-2 text-sm text-slate-400">
-                      <CalendarDays size={16} />
-
+                    <div className="mt-2 text-sm text-slate-400">
+                      Berangkat:
+                      {' '}
                       {new Date(
                         item.tanggal_berangkat,
-                      ).toLocaleString(
+                      ).toLocaleTimeString(
                         'id-ID',
+                        {
+                          hour: '2-digit',
+                          minute:
+                            '2-digit',
+                        },
                       )}
+                    </div>
+
+                    <div className="mt-2 inline-block rounded-lg bg-green-500/10 px-3 py-1 text-sm text-green-400">
+                      Tersedia
+                      {' '}
+                      {
+                        item.total_jadwal
+                      }
+                      {' '}
+                      Hari
                     </div>
                   </div>
 
@@ -219,9 +270,8 @@ export default function CariTiketPage() {
                       Harga
                     </p>
 
-                    <p className="mb-4 text-2xl font-bold text-green-400">
-                      Rp
-                      {' '}
+                    <p className="mb-4 text-3xl font-bold text-green-400">
+                      Rp{' '}
                       {item.harga.toLocaleString(
                         'id-ID',
                       )}

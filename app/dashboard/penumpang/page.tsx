@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 import {
   CalendarDays,
@@ -38,15 +39,34 @@ export default function PenumpangDashboardPage() {
   const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
-    const storedUser =
-      localStorage.getItem('user')
+  checkProfile()
 
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
+  const storedUser =
+    localStorage.getItem('user')
+
+  if (storedUser) {
+    setUser(JSON.parse(storedUser))
+  }
+}, [])
+
+const checkProfile = async () => {
+  try {
+    const res =
+      await api.get('/pelanggan/me')
+
+    setProfil(res.data)
 
     fetchTickets()
-  }, [])
+  } catch (error: any) {
+    if (
+      error?.response?.status === 404
+    ) {
+      router.replace(
+        '/dashboard/penumpang/lengkapi-profil',
+      )
+    }
+  }
+}
 
   const fetchTickets = async () => {
     try {
@@ -66,6 +86,9 @@ export default function PenumpangDashboardPage() {
       setLoading(false)
     }
   }
+  const router = useRouter()
+  const [profil, setProfil] =
+  useState<any>(null)
 
   const latestTicket =
     tickets.length > 0
@@ -76,7 +99,7 @@ export default function PenumpangDashboardPage() {
     <div className="space-y-8">
       <div className="rounded-3xl border border-slate-800 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-6 md:p-8">
         <h1 className="text-3xl font-bold text-white">
-          Halo, {!user ? 'Penumpang' : user.username} 👋
+          Halo, {profil?.nama_penumpang || 'Penumpang'} 👋
         </h1>
 
         <p className="mt-2 text-slate-400">
@@ -86,7 +109,7 @@ export default function PenumpangDashboardPage() {
 
         <Link
           href="/dashboard/penumpang/cari-tiket"
-          className="mt-6 inline-flex items-center gap-2 rounded-xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-500"
+          className="mt-6 inline-flex items-center gap-2 rounded-xl   bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-500"
         >
           <Search size={18} />
           Cari Tiket

@@ -8,6 +8,7 @@ import {
   Train,
   Users,
   Armchair,
+  Trash2,
 } from 'lucide-react'
 
 import api from '@/lib/api/api'
@@ -62,6 +63,14 @@ export default function PesanTiketPage() {
   const [selectedPassenger, setSelectedPassenger] =
     useState(0)
 
+  const [profile, setProfile] =
+    useState<any>(null)
+
+  const [
+    selectedGerbong,
+    setSelectedGerbong,
+  ] = useState(0)
+
   const [jadwal, setJadwal] =
     useState<Jadwal | null>(null)
 
@@ -76,6 +85,7 @@ export default function PesanTiketPage() {
 
   useEffect(() => {
     fetchData()
+    fetchProfile()
   }, [])
 
   const fetchData = async () => {
@@ -92,6 +102,27 @@ export default function PesanTiketPage() {
       setLoading(false)
     }
   }
+  const fetchProfile = async () => {
+    try {
+      const res =
+        await api.get(
+          '/pelanggan/profile',
+        )
+
+      setProfile(res.data)
+
+      setPenumpang([
+        {
+          NIK: res.data.NIK,
+          nama_penumpang:
+            res.data.nama_penumpang,
+          kursiId: null,
+        },
+      ])
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const addPenumpang = () => {
     setPenumpang((prev) => [
@@ -102,6 +133,29 @@ export default function PesanTiketPage() {
         kursiId: null,
       },
     ])
+  }
+
+  const removePenumpang = (
+    index: number,
+  ) => {
+    if (penumpang.length === 1)
+      return
+
+    const updated =
+      penumpang.filter(
+        (_, i) => i !== index,
+      )
+
+    setPenumpang(updated)
+
+    if (
+      selectedPassenger >=
+      updated.length
+    ) {
+      setSelectedPassenger(
+        updated.length - 1,
+      )
+    }
   }
 
   const updatePenumpang = (
@@ -135,31 +189,19 @@ export default function PesanTiketPage() {
   }
 
   const handleSubmit = async () => {
-    try {
-      setSubmitting(true)
+  localStorage.setItem(
+    'checkout-ticket',
+    JSON.stringify({
+      jadwalId,
+      penumpang,
+      totalHarga,
+    }),
+  )
 
-      await api.post('/ticket', {
-        jadwalId,
-        penumpang,
-      })
-
-      alert(
-        'Tiket berhasil dipesan',
-      )
-
-      router.push(
-        '/dashboard/penumpang/tiket',
-      )
-    } catch (err: any) {
-      alert(
-        err?.response?.data
-          ?.message ||
-          'Gagal memesan tiket',
-      )
-    } finally {
-      setSubmitting(false)
-    }
-  }
+  router.push(
+    '/dashboard/penumpang/pembayaran',
+  )
+}
 
   if (loading) {
     return (
@@ -180,6 +222,46 @@ export default function PesanTiketPage() {
   const totalHarga =
     jadwal.harga *
     penumpang.length
+
+  const gerbong =
+    jadwal.kereta.gerbong[
+    selectedGerbong
+    ]
+  gerbong.kursi.sort((a, b) => {
+    const numA = parseInt(a.no_kursi)
+    const numB = parseInt(b.no_kursi)
+
+    if (numA !== numB) {
+      return numA - numB
+    }
+
+    const hurufA =
+      a.no_kursi.replace(/\d+/g, '')
+
+    const hurufB =
+      b.no_kursi.replace(/\d+/g, '')
+
+    return hurufA.localeCompare(
+      hurufB,
+    )
+  })
+
+  const rows = []
+
+  for (
+    let i = 0;
+    i < gerbong.kursi.length;
+    i += 4
+  ) {
+    rows.push(
+      gerbong.kursi.slice(
+        i,
+        i + 4,
+      ),
+    )
+  }
+
+
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -245,8 +327,6 @@ export default function PesanTiketPage() {
           </div>
         </div>
       </div>
-
-      {/* PENUMPANG */}
       <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="flex items-center gap-2 text-xl font-bold">
@@ -272,12 +352,11 @@ export default function PesanTiketPage() {
                     index,
                   )
                 }
-                className={`rounded-xl px-4 py-2 font-semibold ${
-                  selectedPassenger ===
+                className={`rounded-xl px-4 py-2 font-semibold ${selectedPassenger ===
                   index
-                    ? 'bg-cyan-400 text-slate-950'
-                    : 'bg-slate-800 text-white'
-                }`}
+                  ? 'bg-cyan-400 text-slate-950'
+                  : 'bg-slate-800 text-white'
+                  }`}
               >
                 Penumpang{' '}
                 {index + 1}
@@ -287,190 +366,263 @@ export default function PesanTiketPage() {
         </div>
 
         <div className="space-y-4">
-          {penumpang.map(
-            (
-              item,
-              index,
-            ) => (
-              <div
-                key={index}
-                className="grid gap-4 md:grid-cols-3"
-              >
-                <input
-                  placeholder="NIK"
-                  value={item.NIK}
-                  onChange={(e) =>
-                    updatePenumpang(
-                      index,
-                      'NIK',
-                      e.target.value,
-                    )
-                  }
-                  className="rounded-xl border border-slate-700 bg-slate-950 p-3 text-white"
-                />
+  {penumpang.map(
+    (item, index) => (
+      <div
+        key={index}
+        className="rounded-2xl border border-slate-800 bg-slate-950 p-4"
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-semibold text-white">
+            Penumpang {index + 1}
+          </h3>
 
-                <input
-                  placeholder="Nama Penumpang"
-                  value={
-                    item.nama_penumpang
-                  }
-                  onChange={(e) =>
-                    updatePenumpang(
-                      index,
-                      'nama_penumpang',
-                      e.target.value,
-                    )
-                  }
-                  className="rounded-xl border border-slate-700 bg-slate-950 p-3 text-white"
-                />
-
-                <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
-                  <p className="text-sm text-slate-400">
-                    Kursi Dipilih
-                  </p>
-
-                  <p className="font-bold text-cyan-400">
-                    {item.kursiId
-                      ? `ID ${item.kursiId}`
-                      : 'Belum dipilih'}
-                  </p>
-                </div>
-              </div>
-            ),
+          {index > 0 && (
+            <button
+              onClick={() =>
+                removePenumpang(index)
+              }
+              className="rounded-lg bg-red-500 p-2 text-white hover:bg-red-600"
+            >
+              <Trash2 size={16} />
+            </button>
           )}
         </div>
-      </div>
 
-      {/* GERBONG */}
-      {jadwal.kereta.gerbong.map(
-        (gerbong) => (
-          <div
-            key={gerbong.id}
-            className="rounded-3xl border border-slate-800 bg-slate-900 p-6"
-          >
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold">
-                  {
-                    gerbong.nama_gerbong
-                  }
-                </h3>
+        <div className="grid gap-4 md:grid-cols-3">
+          <input
+            placeholder="NIK"
+            value={item.NIK}
+            onChange={(e) =>
+              updatePenumpang(
+                index,
+                'NIK',
+                e.target.value,
+              )
+            }
+            className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-white"
+          />
 
-                <p className="text-slate-400">
-                  {
-                    gerbong.kursi
-                      .length
-                  }{' '}
-                  Kursi
-                </p>
-              </div>
+          <input
+            placeholder="Nama Penumpang"
+            value={item.nama_penumpang}
+            onChange={(e) =>
+              updatePenumpang(
+                index,
+                'nama_penumpang',
+                e.target.value,
+              )
+            }
+            className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-white"
+          />
 
-              <div className="rounded-xl bg-cyan-500/10 px-4 py-2 text-cyan-400">
-                Penumpang{' '}
-                {selectedPassenger +
-                  1}
-              </div>
-            </div>
-
-            <div className="mb-6 flex justify-center">
-              <div className="rounded-xl bg-slate-800 px-10 py-3 font-bold">
-                DEPAN KERETA
-              </div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-3 md:grid-cols-8">
-              {gerbong.kursi.map(
-                (kursi) => {
-                  const dipilih =
-                    penumpang.some(
-                      (p) =>
-                        p.kursiId ===
-                        kursi.id,
-                    )
-
-                  const aktif =
-                    penumpang[
-                      selectedPassenger
-                    ]?.kursiId ===
-                    kursi.id
-
-                  return (
-                    <button
-                      key={
-                        kursi.id
-                      }
-                      disabled={
-                        !kursi.tersedia
-                      }
-                      onClick={() =>
-                        handleSelectSeat(
-                          kursi.id,
-                        )
-                      }
-                      className={`h-16 rounded-xl border transition ${
-                        aktif
-                          ? 'bg-cyan-400 border-cyan-400 text-slate-950'
-                          : dipilih
-                          ? 'bg-blue-500 border-blue-500 text-white'
-                          : kursi.tersedia
-                          ? 'bg-slate-950 border-slate-700 hover:border-cyan-400'
-                          : 'bg-red-500 border-red-500'
-                      }`}
-                    >
-                      <div className="flex flex-col items-center">
-                        <Armchair size={16} />
-                        <span className="text-xs">
-                          {
-                            kursi.no_kursi
-                          }
-                        </span>
-                      </div>
-                    </button>
-                  )
-                },
-              )}
-            </div>
-          </div>
-        ),
-      )}
-
-      {/* TOTAL */}
-      <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-slate-400">
-              Total Penumpang
+          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
+            <p className="text-sm text-slate-400">
+              Kursi Dipilih
             </p>
 
-            <p className="text-2xl font-bold">
-              {penumpang.length}
-            </p>
-          </div>
-
-          <div className="text-right">
-            <p className="text-slate-400">
-              Total Harga
-            </p>
-
-            <p className="text-3xl font-bold text-green-400">
-              Rp{' '}
-              {totalHarga.toLocaleString(
-                'id-ID',
-              )}
+            <p className="font-bold text-cyan-400">
+              {item.kursiId
+                ? `ID ${item.kursiId}`
+                : 'Belum dipilih'}
             </p>
           </div>
         </div>
-
-        <button
-          onClick={handleSubmit}
-          disabled={submitting}
-          className="mt-6 w-full rounded-xl bg-cyan-400 py-4 font-bold text-slate-950"
-        >
-          {submitting
-            ? 'Memproses...'
-            : 'Pesan Tiket'}
-        </button>
       </div>
-    </div>
-  )
+    ),
+  )}
+</div>
+
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                  <h2 className="mb-4 text-xl font-bold text-white">
+                    Pilih Gerbong
+                  </h2>
+
+                  <div className="flex flex-wrap gap-3">
+                    {jadwal.kereta.gerbong.map(
+                      (item, index) => (
+                        <button
+                          key={item.id}
+                          onClick={() =>
+                            setSelectedGerbong(index)
+                          }
+                          className={`rounded-xl px-4 py-2 font-semibold ${selectedGerbong === index
+                            ? 'bg-cyan-400 text-slate-950'
+                            : 'bg-slate-800 text-white'
+                            }`}
+                        >
+                          {item.nama_gerbong}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                </div>
+
+                {/* KURSI */}
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                  <div className="mb-6 flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-bold text-white">
+                        {gerbong.nama_gerbong}
+                      </h3>
+
+                      <p className="text-slate-400">
+                        {gerbong.kursi.length} Kursi
+                      </p>
+                    </div>
+
+                    <div className="rounded-xl bg-cyan-500/10 px-4 py-2 text-cyan-400">
+                      Penumpang {selectedPassenger + 1}
+                    </div>
+                  </div>
+
+                  <div className="mb-8 flex justify-center">
+                    <div className="rounded-xl bg-cyan-400 px-10 py-3 font-bold text-slate-950">
+                      DEPAN KERETA
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {rows.map((row, rowIndex) => (
+                      <div
+                        key={rowIndex}
+                        className="flex justify-center gap-8"
+                      >
+                        <div className="flex gap-2">
+                          {row.slice(0, 2).map((kursi) => {
+                            const dipilih =
+                              penumpang.some(
+                                (p) =>
+                                  p.kursiId ===
+                                  kursi.id,
+                              )
+
+                            const aktif =
+                              penumpang[
+                                selectedPassenger
+                              ]?.kursiId ===
+                              kursi.id
+
+                            return (
+                              <button
+                                key={kursi.id}
+                                disabled={
+                                  !kursi.tersedia
+                                }
+                                onClick={() =>
+                                  handleSelectSeat(
+                                    kursi.id,
+                                  )
+                                }
+                                className={`h-16 w-16 rounded-xl border ${aktif
+                                  ? 'bg-cyan-400 border-cyan-400 text-slate-950'
+                                  : dipilih
+                                    ? 'bg-blue-500 border-blue-500 text-white'
+                                    : kursi.tersedia
+                                      ? 'bg-slate-950 border-slate-700 text-white'
+                                      : 'bg-red-500 border-red-500 text-white'
+                                  }`}
+                              >
+                                <div className="flex flex-col items-center">
+                                  <Armchair size={18} />
+                                  <span className="text-xs">
+                                    {kursi.no_kursi}
+                                  </span>
+                                </div>
+                              </button>
+                            )
+                          })}
+                        </div>
+
+                        <div className="w-10" />
+
+                        <div className="flex gap-2">
+                          {row.slice(2, 4).map((kursi) => {
+                            const dipilih =
+                              penumpang.some(
+                                (p) =>
+                                  p.kursiId ===
+                                  kursi.id,
+                              )
+
+                            const aktif =
+                              penumpang[
+                                selectedPassenger
+                              ]?.kursiId ===
+                              kursi.id
+
+                            return (
+                              <button
+                                key={kursi.id}
+                                disabled={
+                                  !kursi.tersedia
+                                }
+                                onClick={() =>
+                                  handleSelectSeat(
+                                    kursi.id,
+                                  )
+                                }
+                                className={`h-16 w-16 rounded-xl border ${aktif
+                                  ? 'bg-cyan-400 border-cyan-400 text-slate-950'
+                                  : dipilih
+                                    ? 'bg-blue-500 border-blue-500 text-white'
+                                    : kursi.tersedia
+                                      ? 'bg-slate-950 border-slate-700 text-white'
+                                      : 'bg-red-500 border-red-500 text-white'
+                                  }`}
+                              >
+                                <div className="flex flex-col items-center">
+                                  <Armchair size={18} />
+                                  <span className="text-xs">
+                                    {kursi.no_kursi}
+                                  </span>
+                                </div>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-slate-400">
+                        Total Penumpang
+                      </p>
+
+                      <p className="text-2xl font-bold">
+                        {penumpang.length}
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-slate-400">
+                        Total Harga
+                      </p>
+
+                      <p className="text-3xl font-bold text-green-400">
+                        Rp{' '}
+                        {totalHarga.toLocaleString(
+                          'id-ID',
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className="mt-6 w-full rounded-xl bg-cyan-400 py-4 font-bold text-slate-950"
+                  >
+                    {submitting
+                      ? 'Memproses...'
+                      : 'Pesan Tiket'}
+                  </button>
+                </div>
+                    </div>
+              </div>
+            )
 }
