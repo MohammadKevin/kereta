@@ -69,68 +69,68 @@ export default function LandingPage() {
     <div className="bg-[#030712] text-slate-100 min-h-screen font-sans overflow-x-hidden antialiased">
       <Navbar />
 
-      <section id="beranda" className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
-          style={{
-            backgroundImage: `linear-gradient(to bottom, rgba(3, 7, 18, 0.7) 0%, rgba(3, 7, 18, 0.95) 100%), url('https://images.unsplash.com/photo-1532103054090-334e6e60ab29?auto=format&fit=crop&w=1920&q=80')`
-          }}
-        />
+      <section
+        id="beranda"
+        className="relative min-h-screen overflow-hidden"
+      >
+        <div className="absolute inset-0">
+          <img
+            src="/images/hero/hero-train.jpg"
+            alt="Hero Train"
+            className="h-full w-full object-cover"
+          />
 
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[150px] animate-pulse" />
+          <div className="absolute inset-0 bg-slate-950/70" />
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 backdrop-blur-md mb-6"
-          >
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-            <span className="text-xs font-semibold tracking-wider uppercase text-cyan-300">
-              Sistem Pemesanan Tiket Kereta Indonesia
-            </span>
-          </motion.div>
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-slate-950/50 to-slate-950" />
+        </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6 bg-gradient-to-b from-white via-slate-100 to-slate-400 bg-clip-text text-transparent"
-          >
-            Pesan Tiket Kereta Lebih Mudah
-          </motion.h1>
+        <div className="relative z-10 flex min-h-screen items-center">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="max-w-3xl">
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-base sm:text-xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed"
-          >
-            Cari jadwal perjalanan, pilih kursi terbaik, lakukan pemesanan tiket, dan cetak nota perjalanan secara online dalam satu platform.
-          </motion.p>
+              <span className="mb-5 inline-flex rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyan-400">
+                Sistem Pemesanan Tiket Kereta Indonesia
+              </span>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row justify-center items-center gap-4"
-          >
-            <button
-              onClick={() =>
-                document
-                  .getElementById('kereta')
-                  ?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start',
-                  })
-              }
-              className="w-full sm:w-auto px-8 py-4 bg-slate-900/80 hover:bg-slate-900 text-slate-200 border border-slate-800 hover:border-slate-700 rounded-xl font-medium backdrop-blur-md active:scale-[0.98] transition-all duration-200"
-            >
-              Lihat Kereta
-            </button>
-          </motion.div>
+              <h1 className="mt-5 text-5xl font-extrabold leading-tight text-white md:text-7xl">
+                RailTrack
+                <span className="block text-cyan-400">
+                  Booking Platform
+                </span>
+              </h1>
+
+              <p className="mt-6 max-w-2xl text-lg text-slate-300">
+                Cari jadwal perjalanan, pilih kursi,
+                pesan tiket, dan nikmati pengalaman
+                perjalanan kereta yang modern,
+                cepat, dan aman.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link
+                  href="/login"
+                  className="rounded-xl bg-cyan-400 px-8 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
+                >
+                  Pesan Sekarang
+                </Link>
+
+                <button
+                  onClick={() =>
+                    document
+                      .getElementById('kereta')
+                      ?.scrollIntoView({
+                        behavior: 'smooth',
+                      })
+                  }
+                  className="rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-bold text-white backdrop-blur"
+                >
+                  Lihat Kereta
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
       </section>
 

@@ -116,7 +116,6 @@ export default function PembayaranPage() {
                 </p>
             </div>
 
-            {/* Ringkasan */}
             <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
                 <h2 className="mb-5 text-xl font-bold text-white">
                     Ringkasan Pesanan
@@ -169,7 +168,6 @@ export default function PembayaranPage() {
                 </div>
             </div>
 
-            {/* Metode */}
             <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
                 <h2 className="mb-5 text-xl font-bold text-white">
                     Pilih Metode Pembayaran
@@ -250,7 +248,6 @@ export default function PembayaranPage() {
                 </div>
             </div>
 
-            {/* Detail Pembayaran */}
             <div className="rounded-3xl border border-cyan-500/30 bg-cyan-500/10 p-6">
                 <h2 className="mb-3 text-lg font-bold text-white">
                     Informasi Pembayaran
@@ -298,7 +295,6 @@ export default function PembayaranPage() {
                     )}
             </div>
 
-            {/* Tombol */}
             <button
                 onClick={handleBayar}
                 disabled={submitting}

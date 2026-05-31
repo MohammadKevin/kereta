@@ -9,12 +9,10 @@ import api from '@/lib/api/api';
 export default function RegisterPage() {
   const router = useRouter();
 
-  // Form State
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  // UI Status State
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -49,7 +47,6 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // Sending request with hardcoded payload role as 'PENUMPANG'
       await api.post('/auth/register', {
         username: username.trim(),
         password,
@@ -60,7 +57,6 @@ export default function RegisterPage() {
       setUsername('');
       setPassword('');
       
-      // Auto redirect to login panel after a short delay
       setTimeout(() => {
         router.push('/login');
       }, 2500);
@@ -75,7 +71,6 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen w-full bg-[#030712] text-slate-100 flex flex-col lg:flex-row font-sans antialiased selection:bg-cyan-500/30">
       
-      {/* ================= LEFT SIDE: VISUAL IDENTITY PANEL (DESKTOP) ================= */}
       <div className="hidden lg:flex lg:w-1/2 relative items-center justify-center p-12 overflow-hidden border-r border-blue-500/10">
         <div 
           className="absolute inset-0 bg-cover bg-center transform scale-105"
@@ -134,7 +129,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* ================= RIGHT SIDE: REGISTRATION CONTENT MATRIX ================= */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 md:p-16 relative overflow-hidden">
         <div className="absolute lg:hidden top-[-10%] right-[-10%] w-72 h-72 bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
         <div className="absolute lg:hidden bottom-[-10%] left-[-10%] w-72 h-72 bg-blue-600/10 rounded-full blur-[100px] pointer-events-none" />
@@ -166,7 +160,6 @@ export default function RegisterPage() {
             transition={{ duration: 0.4, ease: 'easeOut' }}
             className="bg-gradient-to-b from-slate-900/80 to-slate-950/80 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.4)] backdrop-blur-xl relative"
           >
-            {/* Success Feedback Notification */}
             {isSuccess && (
               <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm rounded-xl flex items-start gap-3 animate-fadeIn">
                 <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
@@ -174,7 +167,6 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Error Feedback Notification */}
             {apiError && (
               <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-200 text-sm rounded-xl flex items-start gap-3 animate-fadeIn">
                 <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
@@ -184,7 +176,6 @@ export default function RegisterPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               
-              {/* Username Field */}
               <div className="space-y-2">
                 <label htmlFor="username" className="text-xs font-semibold tracking-wider uppercase text-slate-400 block">
                   Username
@@ -216,7 +207,6 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              {/* Password Field */}
               <div className="space-y-2">
                 <label htmlFor="password" className="text-xs font-semibold tracking-wider uppercase text-slate-400 block">
                   Password
@@ -257,7 +247,6 @@ export default function RegisterPage() {
                 )}
               </div>
 
-              {/* Action Catalyst Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading || isSuccess}
@@ -276,7 +265,6 @@ export default function RegisterPage() {
             </form>
           </motion.div>
 
-          {/* Anchor Direction Link to Login Page */}
           <p className="text-center text-sm text-slate-400">
             Sudah memiliki akun?{' '}
             <button

@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const _geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 
 export const metadata: Metadata = {
-  title: 'Visionary Route - Premium Railway Booking',
+  title: 'RailTrack - Your Premium Train Ticket Booking Experience',
   description: 'Experience seamless train ticket booking with real-time schedules, premium seats, and instant confirmations. Book your journey with Visionary Route.',
   generator: 'v0.app',
   keywords: ['train booking', 'railway tickets', 'premium travel', 'train schedules'],

@@ -20,20 +20,17 @@ interface KeretaFormData {
 type ModalType = 'CREATE' | 'EDIT' | 'DELETE' | null;
 
 export default function AdminKeretaPage() {
-    // Core Operational States
     const [keretaList, setKeretaList] = useState<Kereta[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [apiError, setApiError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
 
-    // Modal Interactive Management States
     const [modalType, setModalType] = useState<ModalType>(null);
     const [selectedKereta, setSelectedKereta] = useState<Kereta | null>(null);
     const [formData, setFormData] = useState<KeretaFormData>({ nama_kereta: '', deskripsi: '', kelas: 'EKSEKUTIF' });
     const [formError, setFormError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-    // Fetch Core Inventory Lifecycle
     const fetchKereta = async () => {
         try {
             setIsLoading(true);
@@ -51,7 +48,6 @@ export default function AdminKeretaPage() {
         fetchKereta();
     }, []);
 
-    // Structural Form Payload Processing Mutations
     const openCreateModal = () => {
         setFormData({ nama_kereta: '', deskripsi: '', kelas: 'EKSEKUTIF' });
         setFormError(null);
@@ -189,7 +185,7 @@ export default function AdminKeretaPage() {
             )
 
             const response =
-                await api.patch(
+                await api.patc(
                     `/kereta/${selectedKereta.id}`,
                     payload,
                 )
@@ -285,7 +281,6 @@ export default function AdminKeretaPage() {
     return (
         <div className="space-y-8 min-h-screen bg-slate-950 text-slate-100">
 
-            {/* ================= HEADER CONTROL REGION ================= */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-800">
                 <div>
                     <div className="flex items-center gap-2">
@@ -303,7 +298,6 @@ export default function AdminKeretaPage() {
                 </button>
             </div>
 
-            {/* ================= SEARCH REGION ================= */}
             <div className="w-full max-w-md relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
                     <Search className="w-4 h-4" />
@@ -317,7 +311,6 @@ export default function AdminKeretaPage() {
                 />
             </div>
 
-            {/* ================= INVENTORY CONTROL VISUAL GRID ================= */}
             {isLoading ? (
                 <div className="flex flex-col items-center justify-center py-24 bg-slate-900/40 border border-slate-800 rounded-2xl">
                     <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mb-3" />
@@ -386,14 +379,12 @@ export default function AdminKeretaPage() {
                 </div>
             )}
 
-            {/* ================= TRANSACTIONAL DIALOG MODALS ================= */}
             {modalType && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div onClick={closeModal} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
                     <div className="relative w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
 
-                        {/* Header Dialog */}
                         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/50">
                             <h3 className="text-base font-bold text-white">
                                 {modalType === 'CREATE' && 'Tambah Kereta Baru'}
@@ -405,7 +396,6 @@ export default function AdminKeretaPage() {
                             </button>
                         </div>
 
-                        {/* Mutation Form Core Container */}
                         {modalType === 'DELETE' ? (
                             <div className="p-6 space-y-6">
                                 <div className="flex gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-sm">

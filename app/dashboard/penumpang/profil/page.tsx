@@ -74,7 +74,6 @@ export default function ProfilPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="rounded-3xl border border-slate-800 bg-slate-900 p-8">
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
           <div className="flex items-center gap-5">
@@ -108,7 +107,6 @@ export default function ProfilPage() {
         </div>
       </div>
 
-      {/* Info */}
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="mb-5 text-xl font-bold text-white">
@@ -179,7 +177,6 @@ export default function ProfilPage() {
           </div>
         </div>
 
-        {/* Statistik */}
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="mb-5 text-xl font-bold text-white">
             Statistik
@@ -219,7 +216,6 @@ export default function ProfilPage() {
         </div>
       </div>
 
-      {/* Riwayat */}
       <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
         <h2 className="mb-5 text-xl font-bold text-white">
           Riwayat Pembelian Tiket

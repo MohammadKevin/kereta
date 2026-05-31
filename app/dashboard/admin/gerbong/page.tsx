@@ -335,7 +335,6 @@ export default function AdminGerbongPage() {
                       key={rowIndex}
                       className="flex items-center justify-center gap-3"
                     >
-                      {/* kiri */}
                       <div className="flex gap-3">
                         {row
                           .slice(0, 2)
@@ -356,10 +355,8 @@ export default function AdminGerbongPage() {
                           ))}
                       </div>
 
-                      {/* lorong */}
                       <div className="w-10" />
 
-                      {/* kanan */}
                       <div className="flex gap-3">
                         {row
                           .slice(2, 4)

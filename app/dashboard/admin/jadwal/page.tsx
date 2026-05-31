@@ -33,14 +33,12 @@ interface JadwalFormData {
 type ModalType = 'CREATE' | 'EDIT' | 'DELETE' | null;
 
 export default function AdminJadwalPage() {
-  // Operational Data States
   const [jadwalList, setJadwalList] = useState<Jadwal[]>([]);
   const [keretaList, setKeretaList] = useState<Kereta[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [apiError, setApiError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Modal Structural Management States
   const [modalType, setModalType] = useState<ModalType>(null);
   const [selectedJadwal, setSelectedJadwal] = useState<Jadwal | null>(null);
   const [formData, setFormData] = useState<JadwalFormData>({
@@ -54,12 +52,10 @@ export default function AdminJadwalPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  // Synchronous Map Cache optimization for instant relational rendering
   const keretaMap = useMemo(() => {
     return new Map<number, Kereta>(keretaList.map((k) => [k.id, k]));
   }, [keretaList]);
 
-  // Unified Data Procurement Layer
   const fetchData = async () => {
     try {
       setIsLoading(true);
@@ -81,7 +77,6 @@ export default function AdminJadwalPage() {
     fetchData();
   }, []);
 
-  // Helper formatting engine to map API Iso Strings back into HTML input element space
   const formatIsoToLocalDatetime = (isoString: string): string => {
     if (!isoString) return '';
     const date = new Date(isoString);
@@ -93,7 +88,6 @@ export default function AdminJadwalPage() {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
-  // Transaction state mutator initializers
   const openCreateModal = () => {
     const primaryKeretaId = keretaList.length > 0 ? keretaList[0].id : 0;
     setFormData({
@@ -141,7 +135,6 @@ export default function AdminJadwalPage() {
     }));
   };
 
-  // Mutative Network Core Execution Transactions
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.asal_keberangkatan.trim() || !formData.tujuan_keberangkatan.trim() || !formData.tanggal_berangkat || !formData.tanggal_kedatangan || formData.harga <= 0 || formData.keretaId === 0) {
@@ -212,7 +205,6 @@ export default function AdminJadwalPage() {
     }
   };
 
-  // High performance localized functional cross reference filter
   const filteredJadwal = useMemo(() => {
     return jadwalList.filter((j) =>
       j.asal_keberangkatan.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -220,7 +212,6 @@ export default function AdminJadwalPage() {
     );
   }, [jadwalList, searchQuery]);
 
-  // Datetime human localization localized engine
   const formatDisplayDate = (isoString: string): string => {
     if (!isoString) return '-';
     return new Date(isoString).toLocaleString('id-ID', {
@@ -255,7 +246,6 @@ export default function AdminJadwalPage() {
   return (
     <div className="space-y-8 min-h-screen bg-slate-950 text-slate-100">
 
-      {/* ================= HEADER CONTROL REGION ================= */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-800">
         <div>
           <div className="flex items-center gap-2">
@@ -274,7 +264,6 @@ export default function AdminJadwalPage() {
         </button>
       </div>
 
-      {/* ================= FILTER AND ARCHITECTURE CONTROL REGION ================= */}
       <div className="w-full max-w-md relative">
         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500">
           <Search className="w-4 h-4" />
@@ -288,7 +277,6 @@ export default function AdminJadwalPage() {
         />
       </div>
 
-      {/* ================= INVENTORY VISUAL CONSOLE LAYER ================= */}
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-24 bg-slate-900/40 border border-slate-800 rounded-2xl">
           <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mb-3" />
@@ -417,14 +405,12 @@ export default function AdminJadwalPage() {
         </div>
       )}
 
-      {/* ================= TRANSACTION DIALOG MODAL FRAMES ================= */}
       {modalType && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={closeModal} className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
           <div className="relative w-full max-w-lg bg-slate-900 border border-slate-800 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
 
-            {/* Header Control Container */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/50">
               <h3 className="text-base font-bold text-white">
                 {modalType === 'CREATE' && 'Tambah Jadwal Operasional'}
@@ -435,8 +421,6 @@ export default function AdminJadwalPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-
-            {/* Modal Body Canvas */}
             {modalType === 'DELETE' ? (
               <div className="p-6 space-y-6">
                 <div className="flex gap-3 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-sm">
@@ -475,7 +459,6 @@ export default function AdminJadwalPage() {
                   </div>
                 )}
 
-                {/* Dropdown Allocation Array */}
                 <div className="space-y-1.5">
                   <label htmlFor="keretaId" className="text-xs font-semibold tracking-wider uppercase text-slate-400">
                     Pilih Armada Kereta
@@ -496,7 +479,6 @@ export default function AdminJadwalPage() {
                   </select>
                 </div>
 
-                {/* Direction Vectors Input */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label htmlFor="asal_keberangkatan" className="text-xs font-semibold tracking-wider uppercase text-slate-400">
@@ -528,7 +510,6 @@ export default function AdminJadwalPage() {
                   </div>
                 </div>
 
-                {/* Time Domain Allocations */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label htmlFor="tanggal_berangkat" className="text-xs font-semibold tracking-wider uppercase text-slate-400">
@@ -558,7 +539,6 @@ export default function AdminJadwalPage() {
                   </div>
                 </div>
 
-                {/* Price Quantizer Matrix */}
                 <div className="space-y-1.5">
                   <label htmlFor="harga" className="text-xs font-semibold tracking-wider uppercase text-slate-400">
                     Harga Tiket (IDR)

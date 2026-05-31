@@ -76,7 +76,6 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-950 text-white">
-      {/* Mobile Overlay */}
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/60 lg:hidden"
@@ -84,7 +83,6 @@ export default function AdminLayout({
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed left-0 top-0 z-50
@@ -100,7 +98,6 @@ export default function AdminLayout({
           }
         `}
       >
-        {/* Logo */}
         <div className="flex h-20 items-center justify-between border-b border-slate-800 px-6">
           <div className="flex items-center gap-3">
             <Train className="text-cyan-400" />
@@ -124,7 +121,6 @@ export default function AdminLayout({
           </button>
         </div>
 
-        {/* Menu */}
         <div className="flex h-[calc(100vh-80px)] flex-col justify-between">
           <nav className="space-y-2 p-4">
             {menus.map((menu) => {
@@ -160,7 +156,6 @@ export default function AdminLayout({
             })}
           </nav>
 
-          {/* Logout */}
           <div className="border-t border-slate-800 p-4">
             <button
               onClick={handleLogout}
@@ -173,9 +168,7 @@ export default function AdminLayout({
         </div>
       </aside>
 
-      {/* Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header */}
         <header className="flex h-20 shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900/90 px-6 backdrop-blur">
           <div className="flex items-center gap-4">
             <button
@@ -213,7 +206,6 @@ export default function AdminLayout({
           </div>
         </header>
 
-        {/* Page Content */}
         <main className="flex-1 overflow-y-auto p-6">
           {children}
         </main>

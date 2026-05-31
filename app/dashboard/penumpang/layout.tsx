@@ -58,7 +58,6 @@ export default function PenumpangLayout({
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-950 text-white">
-      {/* Mobile Overlay */}
       {open && (
         <div
           className="fixed inset-0 z-40 bg-black/60 lg:hidden"
@@ -66,7 +65,6 @@ export default function PenumpangLayout({
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed left-0 top-0 z-50
@@ -147,9 +145,7 @@ export default function PenumpangLayout({
         </div>
       </aside>
 
-      {/* Content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Header */}
         <header className="flex h-20 shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900/90 px-6 backdrop-blur">
           <div className="flex items-center gap-4">
             <button
@@ -175,7 +171,6 @@ export default function PenumpangLayout({
           </div>
         </header>
 
-        {/* Main */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           {children}
         </main>
