@@ -185,7 +185,7 @@ export default function AdminKeretaPage() {
             )
 
             const response =
-                await api.patc(
+                await api.patch(
                     `/kereta/${selectedKereta.id}`,
                     payload,
                 )
