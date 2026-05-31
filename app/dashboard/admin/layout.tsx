@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   TrainFront,
+  ScanLine,
 } from 'lucide-react'
 
 interface AdminLayoutProps {
@@ -50,6 +51,11 @@ const menus = [
     title: 'Pemesanan',
     href: '/dashboard/admin/pemesanan',
     icon: Ticket,
+  },
+  {
+    title: 'Scan Tiket',
+    href: '/dashboard/admin/scan',
+    icon: ScanLine,
   },
 ]
 
