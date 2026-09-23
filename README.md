@@ -18,9 +18,9 @@ An intuitive web interface for searching train schedules, selecting carriage sea
 ---
 
 ## ✨ Key Features
-- ⚡ **Interactive seat picker with carriage switching**: Interactive seat picker with carriage switching
-- ⚡ **Departure and arrival route lookup with real-time filters**: Departure and arrival route lookup with real-time filters
-- ⚡ **Admin panel for managing trains, schedules, and ticket pricing**: Admin panel for managing trains, schedules, and ticket pricing
+- Interactive seat picker with carriage switching
+- Departure and arrival route lookup with real-time filters
+- Admin panel for managing trains, schedules, and ticket pricing
 
 ---
 
